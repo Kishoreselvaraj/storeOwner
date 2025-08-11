@@ -37,6 +37,8 @@ dependencies:
   firebase_core: ^4.0.0
   firebase_auth: ^6.0.0
   firebase_database: ^12.0.0
+  image_picker: ^1.0.5
+  http: 1.4.0
 
 dev_dependencies:
   flutter_test:
@@ -90,3 +92,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  assets:
+    - assets/onboarding/
+
