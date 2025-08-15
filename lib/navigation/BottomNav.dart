@@ -9,7 +9,6 @@ class NavItem {
   final String icon;
   final String activeIcon;
   final Widget screen;
-
   const NavItem({
     required this.label,
     required this.icon,
@@ -28,7 +27,6 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   int _selectedIndex = 0;
 
-  // Typed, immutable tab config
   static const List<NavItem> _navItems = [
     NavItem(
       label: 'Home',
@@ -50,7 +48,6 @@ class _BottomNavState extends State<BottomNav> {
     ),
   ];
 
-  // Precache icons for snappy switching
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -65,78 +62,85 @@ class _BottomNavState extends State<BottomNav> {
     setState(() => _selectedIndex = index);
   }
 
+  Future<bool> _onWillPop() async {
+    if (_selectedIndex != 0) {
+      setState(() => _selectedIndex = 0);
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     const activeColor = Color(0xFFFF8D29);
     const inactiveColor = Color(0xFF82838B);
 
-    // Compute these once per build
     final barHeight = SizeHelper.byHeight(context, 88);
     final iconW = SizeHelper.byWidth(context, 25);
     final iconH = SizeHelper.byHeight(context, 25);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
-      body: Column(
-        children: [
-          // Keep each tab's state
-          Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: _navItems.map((e) => e.screen).toList(growable: false),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFFFFFF),
+        body: Column(
+          children: [
+            Expanded(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: _navItems.map((e) => e.screen).toList(growable: false),
+              ),
             ),
-          ),
+            SafeArea(
+              top: false,
+              child: Container(
+                height: barHeight,
+                color: Colors.white,
+                child: Row(
+                  children: List.generate(_navItems.length, (index) {
+                    final item = _navItems[index];
+                    final isActive = _selectedIndex == index;
 
-          // Custom bottom bar with InkWell
-          SafeArea(
-            top: false,
-            child: Container(
-              height: barHeight,
-              color: Colors.white,
-              child: Row(
-                children: List.generate(_navItems.length, (index) {
-                  final item = _navItems[index];
-                  final isActive = _selectedIndex == index;
-
-                  return Expanded(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => _onTap(index),
-                        borderRadius: BorderRadius.circular(16),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image(
-                                image: AssetImage(isActive ? item.activeIcon : item.icon),
-                                width: iconW,
-                                height: iconH,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                item.label,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                                  color: isActive ? activeColor : inactiveColor,
+                    return Expanded(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _onTap(index),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image(
+                                  image: AssetImage(isActive ? item.activeIcon : item.icon),
+                                  width: iconW,
+                                  height: iconH,
+                                  fit: BoxFit.contain,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 6),
+                                Text(
+                                  item.label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                                    color: isActive ? activeColor : inactiveColor,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
