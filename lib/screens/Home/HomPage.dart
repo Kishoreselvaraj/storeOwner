@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../ProductListPage.dart';
+import '../../utils/SizeHelper.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -10,16 +11,16 @@ class HomePage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
+          padding: EdgeInsets.symmetric(horizontal: SizeHelper.byWidth(context, 18)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 28),
+              SizedBox(height: SizeHelper.byHeight(context, 28)),
               RichText(
                 text: const TextSpan(
                   style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
                       color: Colors.black),
                   children: [
                     TextSpan(text: "Sell your products and\n"),
@@ -30,15 +31,15 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: SizeHelper.byHeight(context, 8)),
               const Text(
                 "Find Clients & Sell Products in One Tap",
                 style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 15,
+                    color: Color(0xFF71727A),
+                    fontSize: 14,
                     fontWeight: FontWeight.w400),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: SizeHelper.byHeight(context, 32)),
               _RoundedCard(
                 title: "Add Products",
                 subtitle: "Sell you products",
@@ -46,44 +47,55 @@ class HomePage extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => ProductListPage()));
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: SizeHelper.byHeight(context, 16)),
               _RoundedCard(
                 title: "View Booking",
                 subtitle: "View List for Product bookings",
                 onTap: () {},
               ),
-              const SizedBox(height: 34),
+              SizedBox(height: SizeHelper.byHeight(context, 34)),
               Stack(
                 children: [
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(20, 26, 20, 18),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.10),
+                      color: Color(0xFFFFF2E8),
                       borderRadius: BorderRadius.circular(18),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
+                      children: [
+                        const Text(
                           "You'll get:",
                           style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 17,
-                            color: Colors.black,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            color: Color(0xFF1F2024),
                           ),
                         ),
-                        SizedBox(height: 10),
-                        _BenefitRow(text: "Trusted Customers"),
-                        _BenefitRow(text: "Branding your shop"),
-                        _BenefitRow(text: "Chat directly with your client and electrician"),
+                        SizedBox(height: SizeHelper.byHeight(context, 10)),
+                        const _BenefitRow(text: "Trusted Customers"),
+                        const _BenefitRow(text: "Branding your shop"),
+                        const _BenefitRow(text: "Chat directly with your client and electrician"),
                       ],
                     ),
                   ),
                   Positioned(
-                    top: 10, right: 14,
-                    child: Icon(Icons.star, color: Colors.orange, size: 24),
-                  ),
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: SizeHelper.byWidth(context, 32),
+                      height: SizeHelper.byHeight(context, 32),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFFFF8D29),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.star, color: Colors.white, size: 18),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ],
@@ -102,7 +114,7 @@ class _RoundedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.orange.withOpacity(0.05),
+      color: Color(0xFFFFF2E8),
       borderRadius: BorderRadius.circular(15),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
@@ -117,18 +129,18 @@ class _RoundedCard extends StatelessWidget {
                 children: [
                   Text(title,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       fontSize: 17,
-                      color: Colors.black,
+                      color: Color(0xFF1F2024),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: SizeHelper.byHeight(context, 4)),
                   Text(subtitle,
-                    style: const TextStyle(color: Colors.black54, fontSize: 14),
+                    style: const TextStyle(color: Color(0xFF71727A), fontSize: 12, fontWeight: FontWeight.w400 ),
                   ),
                 ],
               ),
-              const Icon(Icons.chevron_right, color: Colors.orange, size: 32),
+              const Icon(Icons.chevron_right, color: Color(0xFF8F9098), size: 32),
             ],
           ),
         ),
@@ -142,14 +154,14 @@ class _BenefitRow extends StatelessWidget {
   const _BenefitRow({required this.text});
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 2),
+    padding: EdgeInsets.symmetric(vertical: SizeHelper.byHeight(context, 2)),
     child: Row(
       children: [
-        Icon(Icons.star, color: Colors.orange[600], size: 17),
-        const SizedBox(width: 7),
+        Icon(Icons.star, color: Color(0xFFFF8D29), size: 17),
+        SizedBox(width: SizeHelper.byWidth(context, 7)),
         Flexible(child: Text(
           text,
-          style: const TextStyle(fontSize: 15, color: Colors.black87),
+          style: const TextStyle(fontSize: 15, color: Color(0xFF71727A)),
         )),
       ],
     ),
