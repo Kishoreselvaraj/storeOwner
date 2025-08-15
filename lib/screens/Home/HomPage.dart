@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import '../ProductListPage.dart';
 import '../../utils/SizeHelper.dart';
 
+
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final VoidCallback onAddProduct;
+
+  const HomePage({
+    super.key,
+    required this.onAddProduct,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +48,7 @@ class HomePage extends StatelessWidget {
               _RoundedCard(
                 title: "Add Products",
                 subtitle: "Sell you products",
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => ProductListPage()));
-                },
+                onTap: () {onAddProduct();},
               ),
               SizedBox(height: SizeHelper.byHeight(context, 16)),
               _RoundedCard(
