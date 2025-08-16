@@ -127,6 +127,7 @@ class _ProductListPageState extends State<ProductListPage> {
               // Padding(
               //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
               //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
               //     children: [
               //       MaterialButton(
               //         color: Colors.grey[200],
