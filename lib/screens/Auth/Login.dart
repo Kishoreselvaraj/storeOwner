@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../../components/CustomTextField.dart';
 const String onboard1Image = 'assets/onboarding/onboard1.png';
 const String onboard2Image = 'assets/onboarding/onboard2.png';
 const String onboard3Image = 'assets/onboarding/onboard3.png';
@@ -74,6 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
         error = e.message ?? "Login failed.";
       });
     } catch (e) {
+      if (!mounted) return;
+      
       setState(() {
         error = "Unexpected error: $e";
       });
@@ -197,50 +198,197 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget buildLogin() {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            CustomTextField(
-              controller: emailController,
-              label: "Email",
-              keyboardType: TextInputType.emailAddress,
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Top illustration (replace with your asset if needed)
+                SizedBox(height: 32),
+                Image.asset(
+                  "assets/onboarding/login.png", // Replace with your image path
+                  height: 170,
+                ),
+                SizedBox(height: 28),
+                
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Welcome!",
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 18),
+
+                // Email Field
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    hintText: "Email Address",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                // Password Field
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    suffixIcon: Icon(Icons.visibility_off_outlined, color: Colors.grey),
+                  ),
+                ),
+                SizedBox(height: 10),
+
+                // Forgot Password
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/reset-password');
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      "Forgot password?",
+                      style: TextStyle(
+                        color: Colors.orange.shade700,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Error
+                if (error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(error!,
+                        style: TextStyle(color: Colors.red, fontSize: 14)),
+                  ),
+
+                // Login Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: loading ? null : loginUser,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: loading
+                        ? CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : Text(
+                            "Login",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
+                          ),
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                // Register text
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Not a member? ",
+                        style: TextStyle(color: Colors.black87)),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/signup'),
+                      child: Text(
+                        "Register now",
+                        style: TextStyle(
+                          color: Colors.orange.shade700,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 22),
+                Divider(),
+                SizedBox(height: 15),
+
+                // Social login text
+                Text(
+                  "Or continue with",
+                  style: TextStyle(color: Colors.black54, fontSize: 15),
+                ),
+                SizedBox(height: 18),
+
+                // Social login row (add functions)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.red.shade600,
+                      child: Icon(Icons.g_mobiledata, color: Colors.white, size: 32),
+                    ),
+                    SizedBox(width: 24),
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.black,
+                      child: Icon(Icons.apple, color: Colors.white, size: 28),
+                    ),
+                    SizedBox(width: 24),
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.blue.shade700,
+                      child: Icon(Icons.facebook, color: Colors.white, size: 28),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
+              ],
             ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              controller: passwordController,
-              label: "Password",
-              obscureText: true,
-            ),
-            const SizedBox(height: 12),
-            if (error != null)
-              Text(
-                error!,
-                style: const TextStyle(color: Colors.red),
-              ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: loading ? null : loginUser,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
-              ),
-              child: loading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text("Login"),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => Navigator.pushNamed(context, '/signup'),
-              child: const Text("Don't have an account? Sign Up"),
-            ),
-          ],
+          ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
