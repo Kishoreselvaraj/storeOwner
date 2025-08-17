@@ -151,20 +151,6 @@ class ProductDetailPage extends StatelessWidget {
           );
         },
       ),
-      // Bottom navigation bar to match design
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0, // Home selected
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), label: 'Chats'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
-        ],
-        onTap: (idx) {
-          // handle navigation as needed
-        },
-      ),
     );
   }
 }
