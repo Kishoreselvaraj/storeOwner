@@ -37,4 +37,5 @@ flutter:
   assets:
     - assets/onboarding/
     - assets/bottomnav/
+    - assets/product_add/
 

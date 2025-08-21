@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/Home/HomPage.dart';
+import '../screens/Home/HomPage.dart'; // Ensure this path/class name matches your file (HomePage)
 import '../screens/Chat/ChatPage.dart';
 import '../screens/Profile/ProfilePage.dart';
 import '../screens/Home/ProductListPage.dart';
@@ -26,9 +26,9 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   int _selectedIndex = 0;
 
-  // Nested navigator for the Home tab
+  // Persistent nested navigator key for Home tab
   final GlobalKey<NavigatorState> _homeKey = GlobalKey<NavigatorState>();
-  
+
   static const List<NavItem> _navItems = [
     NavItem(
       label: 'Home',
@@ -50,6 +50,8 @@ class _BottomNavState extends State<BottomNav> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // Precaching can run after first build; guard with mounted for safety in async rebuilds
+    if (!mounted) return;
     for (final item in _navItems) {
       precacheImage(AssetImage(item.icon), context);
       precacheImage(AssetImage(item.activeIcon), context);
@@ -61,16 +63,21 @@ class _BottomNavState extends State<BottomNav> {
     //   setState(() => _selectedIndex = 4);
     //   setState(() => _selectedIndex = index);
     // }
+    // Optional: tapping the active Home tab pops to its root
+    if (index == _selectedIndex && index == 0) {
+      _homeKey.currentState?.popUntil((r) => r.isFirst);
+    }
     setState(() => _selectedIndex = index);
   }
 
-
   Future<bool> _onWillPop() async {
     if (_selectedIndex == 0) {
+      // Try to pop the nested Home navigator first
       final popped = await (_homeKey.currentState?.maybePop() ?? Future.value(false));
-      if (popped) return false;
-      return true;
+      if (popped) return false; // consumed by inner navigator
+      return true;              // let system back close the app
     } else {
+      // Go back to Home tab instead of exiting
       setState(() => _selectedIndex = 0);
       return false;
     }
@@ -78,28 +85,23 @@ class _BottomNavState extends State<BottomNav> {
 
   // Home tab hosts its own navigator so content can change while the bar stays.
   Widget _buildHomeNavigator() {
-    final key = GlobalKey<NavigatorState>();
-    return KeyedSubtree(
-      key: UniqueKey(),                 // new subtree every build
-      child: Navigator(
-        key: key,                       // new navigator state
-        onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case '/':
-              return MaterialPageRoute(
-                builder: (_) => HomePage(
-                  onAddProduct: () => key.currentState?.pushNamed('/product-list'),
-                ),
-              );
-            case '/product-list':
-              return MaterialPageRoute(builder: (_) => const ProductListPage());
-          }
-          return null;
-        },
-      ),
+    return Navigator(
+      key: _homeKey, // ✅ use the persistent key
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/':
+            return MaterialPageRoute(
+              builder: (_) => HomePage(
+                onAddProduct: () => _homeKey.currentState?.pushNamed('/product-list'),
+              ),
+            );
+          case '/product-list':
+            return MaterialPageRoute(builder: (_) => const ProductListPage());
+        }
+        return null;
+      },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +112,6 @@ class _BottomNavState extends State<BottomNav> {
     final iconW = SizeHelper.byWidth(context, 25);
     final iconH = SizeHelper.byHeight(context, 25);
 
-    // Use IndexedStack so each tab preserves state
     final screens = <Widget>[
       _buildHomeNavigator(),
       const ChatPage(),

@@ -6,6 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import '../../utils/SizeHelper.dart';
 import '../../components/Loader.dart';
 
 class AddProductPage extends StatefulWidget {
@@ -317,30 +318,35 @@ Widget _buildSavingOverlay() {
   @override
   Widget build(BuildContext context) {
 if (published) {
+  Future.delayed(const Duration(seconds: 10), () {
+    if (mounted && published) {
+      Navigator.pop(context); // go back one step
+      setState(() {
+        published = false; // reset flag so UI doesn’t rebuild into this again
+      });
+    }
+  });
   return Scaffold(
-    backgroundColor: Colors.orange, // Make background orange
+    backgroundColor: Color(0xFFFF8D29), // Make background orange
     body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            padding: EdgeInsets.all(16),
-            child: Icon(Icons.check, color: Colors.orange, size: 40),
+          Image.asset(
+            'assets/product_add/Approval.png', // Replace with your success image
+            width: 118,
+            height: 118,
           ),
-          SizedBox(height: 32),
+          SizedBox(height: SizeHelper.byHeight(context, 62)),
           Text(
             name.isNotEmpty ? name : "Amazing Fan", // fallback example
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+              color: Color(0xFFFFFFFF),
+              fontSize: 25,
+              fontWeight: FontWeight.w800,
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: SizeHelper.byHeight(context, 9)),
           Text(
             "Published!",
             style: TextStyle(
@@ -349,31 +355,6 @@ if (published) {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 32),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            onPressed: () {
-              setState(() {
-                published = false;
-                previewMode = false;
-                name = '';
-                desc = '';
-                price = 0;
-                available = true;
-                _selectedImage = null;
-                uploadedImageUrl = null;
-              });
-            },
-            child: Text(
-              "Add Another Product",
-              style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
-            ),
-          )
         ],
       ),
     ),
