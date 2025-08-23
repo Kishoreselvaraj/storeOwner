@@ -7,7 +7,7 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFFFFFFFF),
+        backgroundColor: Color(0xFFFFFFFF),
         elevation: 0,
         leading: TextButton(
           onPressed: () {},

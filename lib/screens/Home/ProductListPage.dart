@@ -7,7 +7,8 @@ import 'ProductDetailPage.dart';
 import '../../components/Home/ProductGridCard.dart';
 import 'dart:math' as math;
 import '../../components/Loader.dart';
-import '../../components//Home//floating_bottom_button.dart';
+import '../../components/Home//floating_bottom_button.dart';
+import '../../components/Home/ProductsAppBar.dart';
 
 class Product {
   final String id;
@@ -89,7 +90,11 @@ class _ProductListPageState extends State<ProductListPage> {
       return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.grey[100],
-        appBar: _buildAppBar(context, totalResults: 0),
+        appBar: ProductsAppBar(
+          title: 'Electronic Products',
+          totalResults: 0,
+          onBack: () => Navigator.pop(context),
+        ),
         body: const Center(
           child: Text('Please sign in to view your products.'),
         ),
@@ -101,13 +106,14 @@ class _ProductListPageState extends State<ProductListPage> {
       builder: (context, snapshot) {
         final products = _parseProducts(snapshot.data);
         final filtered = _applySearch(products, _searchQuery);
-
         return Scaffold(
           resizeToAvoidBottomInset: true, // ✅ lets Scaffold lift content for keyboard
           backgroundColor: const Color(0xFFFFFFFF),
-          appBar: _buildAppBar(context, totalResults: products.length),
-
-          // ✅ Dismiss keyboard when tapping anywhere outside inputs
+          appBar: ProductsAppBar(
+            title: 'Electronic Products',
+            totalResults: products.length,
+            onBack: () => Navigator.pop(context),
+          ),
           body: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () => FocusScope.of(context).unfocus(),
@@ -115,7 +121,6 @@ class _ProductListPageState extends State<ProductListPage> {
                 children: [
                   Column(
                     children: [
-                  // Search
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
                     child: TextField(
@@ -136,7 +141,6 @@ class _ProductListPageState extends State<ProductListPage> {
                       onSubmitted: (_) => FocusScope.of(context).unfocus(),
                     ),
                   ),
-
                   // Sort & Filter row (UNCHANGED / STILL COMMENTED)
                   // Padding(
                   //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -186,8 +190,6 @@ class _ProductListPageState extends State<ProductListPage> {
                   //     ],
                   //   ),
                   // ),
-
-                  // Results (Expanded so it shrinks when keyboard appears)
                   Expanded(
                     child: _buildResults(snapshot.connectionState, products, filtered),
                   ),
@@ -211,13 +213,6 @@ class _ProductListPageState extends State<ProductListPage> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, {required int totalResults}) {
-    return const PreferredSize(
-      preferredSize: Size.fromHeight(70),
-      child: _ProductsAppBar(),
-    );
-  }
-
   Widget _buildResults(
     ConnectionState connectionState,
     List<Product> all,
@@ -234,12 +229,8 @@ class _ProductListPageState extends State<ProductListPage> {
     if (items.isEmpty) {
       return const Center(child: Text('No matching products'));
     }
-
-    // Grid sizing
     final width = MediaQuery.of(context).size.width;
     final crossAxisCount = math.max(2, math.min(4, (width / 180).floor()));
-
-    // If your ProductGridCard uses a fixed total height, match the grid cell to it
     const double desiredCardHeight = 189.0;
     const double hPad = 16.0;
     const double vPad = 8.0;
@@ -264,9 +255,9 @@ class _ProductListPageState extends State<ProductListPage> {
           title: p.name,
           imageUrl: p.imageUrl,
           price: p.price,
-          cardHeight: desiredCardHeight, // keep card + cell heights in sync
+          cardHeight: desiredCardHeight, 
           onTap: () {
-            FocusScope.of(context).unfocus(); // dismiss keyboard before navigate
+            FocusScope.of(context).unfocus();
             final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
             Navigator.push(
               context,
@@ -291,7 +282,6 @@ class _ProductListPageState extends State<ProductListPage> {
         items.add(Product.fromMap(key.toString(), val));
       }
     });
-    // Example: newest first if you store timestamps, else keep as-is
     return items;
   }
 
@@ -314,59 +304,4 @@ class _ProductListPageState extends State<ProductListPage> {
   //   // TODO: implement filter dialog/sheet
   //   // e.g., availability toggle, price range, categories
   // }
-}
-
-/// Extracted AppBar into a const-friendly widget (no behavioral change)
-class _ProductsAppBar extends StatelessWidget {
-  const _ProductsAppBar();
-
-  @override
-  Widget build(BuildContext context) {
-    // We need the totalResults passed; use InheritedWidget alternative or keep original Row
-    // To preserve original behavior precisely, recompose the row here reading from ModalRoute if needed.
-    // For simplicity and to keep logic unchanged, we reconstruct using arguments from ancestor:
-    // Since PreferredSize above is const, we’ll mirror your original UI but without the dynamic count.
-    // If you need the dynamic count text, revert to your original _buildAppBar implementation.
-    // (Keeping visuals identical aside from the count coming from parent in your original method.)
-    return AppBar(
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.white,
-      elevation: 0,
-      flexibleSpace: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-          child: Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.chevron_left, color: Color(0xFFFF8D29), size: 32),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 6),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Electronic Products',
-                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF1F2024)),
-                    ),
-                    Text(
-                      'Available',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF71727A), fontWeight: FontWeight.w400),
-                    ),
-                  ],
-                ),
-              ),
-              // You can inject the dynamic results text from parent if needed.
-              // Keeping a neutral label to avoid state coupling here.
-              const Text(
-                'Results',
-                style: TextStyle(color: Color(0xFF71727A), fontSize: 12, fontWeight: FontWeight.w400),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

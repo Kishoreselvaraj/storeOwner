@@ -3,11 +3,12 @@ import '../../utils/SizeHelper.dart';
 
 
 class HomePage extends StatelessWidget {
-  final VoidCallback onAddProduct;
+  final VoidCallback onAddProduct, onBookingList;
 
   const HomePage({
     super.key,
     required this.onAddProduct,
+    required this.onBookingList,
   });
 
   @override
@@ -54,7 +55,7 @@ class HomePage extends StatelessWidget {
               _RoundedCard(
                 title: "View Booking",
                 subtitle: "View List for Product bookings",
-                onTap: () {},
+                onTap: () {onBookingList();},
               ),
               SizedBox(height: SizeHelper.byHeight(context, 34)),
               Stack(

@@ -4,6 +4,7 @@ import '../screens/Chat/ChatPage.dart';
 import '../screens/Profile/ProfilePage.dart';
 import '../screens/Home/ProductListPage.dart';
 import '../utils/SizeHelper.dart';
+import '../screens/Home/BookingPage.dart';
 
 class NavItem {
   final String label;
@@ -93,10 +94,13 @@ class _BottomNavState extends State<BottomNav> {
             return MaterialPageRoute(
               builder: (_) => HomePage(
                 onAddProduct: () => _homeKey.currentState?.pushNamed('/product-list'),
+                onBookingList: () => _homeKey.currentState?.pushNamed('/bookings'),
               ),
             );
           case '/product-list':
             return MaterialPageRoute(builder: (_) => const ProductListPage());
+          case '/bookings': 
+            return MaterialPageRoute(builder: (_) => const BookingPage());
         }
         return null;
       },
