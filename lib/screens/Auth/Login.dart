@@ -26,18 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final List<Map<String, String>> onboardingData = [
     {
-      "image": onboard1Image,
-      "title": "Find Trusted Electricians\n& Products in One Tap",
-      "subtitle": "Book certified electricians or buy electric items from\nnearby shops instantly.",
-      "button": "Next"
-    },
-    {
-      "image": onboard2Image,
-      "title": "Hire an Electrician",
-      "subtitle": "Search nearby electric shops by name, rating & location.",
-      "button": "Next"
-    },
-    {
       "image": onboard3Image,
       "title": "Smart Suggestions",
       "subtitle": "Top Rated Electricians Near You, Popular Products in Your Area.",
@@ -141,25 +129,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   );
                 },
-              ),
-            ),
-            // Indicator Dots
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                onboardingData.length,
-                (index) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.all(4),
-                  height: 8,
-                  width: onboardingPage == index ? 22 : 8,
-                  decoration: BoxDecoration(
-                    color: onboardingPage == index
-                        ? Colors.orange
-                        : Colors.orange.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
               ),
             ),
             const SizedBox(height: 30),
