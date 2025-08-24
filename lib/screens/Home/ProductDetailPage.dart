@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:store/components/Loader.dart';
 import '../../components/Home/floating_bottom_button.dart';
 import './ProductEditPage.dart';
 
@@ -33,7 +34,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           stream: productRef.onValue,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: Loader());
             }
             final data = snapshot.data?.snapshot.value;
             if (data == null || data is! Map) {
@@ -256,7 +257,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(strokeWidth: 2),
+            Loader(),
             SizedBox(width: 12),
             Text(
               "Saving...",

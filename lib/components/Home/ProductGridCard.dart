@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store/components/Loader.dart';
 
 class ProductGridCard extends StatelessWidget {
   final String title;
@@ -52,7 +53,7 @@ class ProductGridCard extends StatelessWidget {
                     if (progress == null) return child;
                     return SizedBox(
                       height: imageHeight,
-                      child: const Center(child: CircularProgressIndicator()),
+                      child: const Center(child: Loader()),
                     );
                   },
                   errorBuilder: (context, error, stackTrace) => Container(

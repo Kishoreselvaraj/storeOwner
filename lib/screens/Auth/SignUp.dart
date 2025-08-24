@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import '../../components/Loader.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -239,7 +240,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                       child: loading
-                          ? CircularProgressIndicator(color: Colors.white)
+                          ? Loader(color: Colors.white)
                           : Text("Sign Up", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                     ),
                   ),

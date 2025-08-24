@@ -177,6 +177,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:store/components/Loader.dart';
 import '../Profile/profile/CreateStorePage.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -223,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
             return Center(child: Text('Error: ${snap.error}'));
           }
           if (snap.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: Loader());
           }
 
           // If no store doc yet → show empty state + Create Store CTA

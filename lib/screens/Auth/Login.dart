@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:store/components/Loader.dart';
 const String onboard1Image = 'assets/onboarding/onboard1.png';
 const String onboard2Image = 'assets/onboarding/onboard2.png';
 const String onboard3Image = 'assets/onboarding/onboard3.png';
@@ -312,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: loading
-                        ? CircularProgressIndicator(
+                        ? Loader(
                             color: Colors.white,
                           )
                         : Text(
