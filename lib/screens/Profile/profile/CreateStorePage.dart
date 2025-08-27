@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart'; // ✅ Added for reverse geocoding
 
 class CreateStorePage extends StatefulWidget {
   const CreateStorePage({Key? key}) : super(key: key);
@@ -19,6 +21,20 @@ class _CreateStorePageState extends State<CreateStorePage> {
 
   LatLng? _pickedLocation;
 
+  /// ✅ Convert LatLng to Address
+  Future<String> _getAddressFromLatLng(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        return "${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+      }
+    } catch (e) {
+      print("Error getting address: $e");
+    }
+    return "Unknown Location";
+  }
+
   /// ✅ Get Current Location
   Future<void> _getCurrentLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -32,8 +48,12 @@ class _CreateStorePageState extends State<CreateStorePage> {
 
     setState(() {
       _pickedLocation = LatLng(position.latitude, position.longitude);
-      _addressController.text =
-          "Lat: ${position.latitude}, Lng: ${position.longitude}";
+    });
+
+    // ✅ Get actual address
+    String address = await _getAddressFromLatLng(position.latitude, position.longitude);
+    setState(() {
+      _addressController.text = address;
     });
   }
 
@@ -44,8 +64,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
       isScrollControlled: true,
       builder: (context) {
         LatLng initialPosition =
-            _pickedLocation ??
-            const LatLng(12.9716, 77.5946); // Default Bangalore
+            _pickedLocation ?? const LatLng(12.9716, 77.5946); // Default Bangalore
         LatLng? tempLocation = _pickedLocation;
 
         return StatefulBuilder(
@@ -87,15 +106,23 @@ class _CreateStorePageState extends State<CreateStorePage> {
                     child: ElevatedButton(
                       onPressed: tempLocation == null
                           ? null
-                          : () {
+                          : () async {
                               setState(() {
                                 _pickedLocation = tempLocation;
-                                _addressController.text =
-                                    "Lat: ${tempLocation!.latitude}, Lng: ${tempLocation!.longitude}";
                               });
+
+                              // ✅ Get actual address for selected point
+                              String address = await _getAddressFromLatLng(
+                                tempLocation!.latitude,
+                                tempLocation!.longitude,
+                              );
+
+                              setState(() {
+                                _addressController.text = address;
+                              });
+
                               Navigator.pop(context);
                             },
-
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         minimumSize: const Size(double.infinity, 50),
@@ -112,18 +139,23 @@ class _CreateStorePageState extends State<CreateStorePage> {
     );
   }
 
-  /// ✅ Save Store Data
+  /// ✅ Save Store Data to Realtime Database
   Future<void> _saveStore() async {
     if (!_formKey.currentState!.validate()) return;
     if (_pickedLocation == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please select a location")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a location")),
+      );
       return;
     }
 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+
+    // Generate unique store ID
+    final storeId = dbRef.push().key;
 
     final storeData = {
       "ownerId": user.uid,
@@ -133,13 +165,26 @@ class _CreateStorePageState extends State<CreateStorePage> {
       "description": _descController.text.trim(),
       "latitude": _pickedLocation!.latitude,
       "longitude": _pickedLocation!.longitude,
+      "createdAt": DateTime.now().toIso8601String(),
     };
 
+    try {
+      await dbRef
+          .child("Shops")
+          .child("Location")
+          .child(user.uid)
+          .child(storeId!)
+          .set(storeData);
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Store Created Successfully")));
-    Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Store Created Successfully")),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
   }
 
   @override
@@ -174,7 +219,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
               ),
               const SizedBox(height: 10),
 
-              // Address Field with Action Buttons
+              // Address Field
               TextFormField(
                 controller: _addressController,
                 decoration: const InputDecoration(
@@ -209,8 +254,8 @@ class _CreateStorePageState extends State<CreateStorePage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 10),
+
               TextFormField(
                 controller: _descController,
                 maxLines: 3,
