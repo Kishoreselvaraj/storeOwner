@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 
 class CreateStorePage extends StatefulWidget {
@@ -126,10 +125,7 @@ class _CreateStorePageState extends State<CreateStorePage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final storeId = FirebaseFirestore.instance.collection("shops").doc().id;
-
     final storeData = {
-      "storeId": storeId,
       "ownerId": user.uid,
       "storeName": _storeNameController.text.trim(),
       "category": _categoryController.text.trim(),
@@ -137,13 +133,8 @@ class _CreateStorePageState extends State<CreateStorePage> {
       "description": _descController.text.trim(),
       "latitude": _pickedLocation!.latitude,
       "longitude": _pickedLocation!.longitude,
-      "createdAt": FieldValue.serverTimestamp(),
     };
 
-    await FirebaseFirestore.instance
-        .collection("shops")
-        .doc(storeId)
-        .set(storeData);
 
     ScaffoldMessenger.of(
       context,
