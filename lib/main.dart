@@ -19,8 +19,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Inter',
       ),
+      
       debugShowCheckedModeBanner: false,
-      home: const ProfilePage(),
+      home: const AppStack(),
     );
   }
 }
